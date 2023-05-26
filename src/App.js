@@ -2,13 +2,15 @@ import * as React from "react";
 import { useState } from "react";
 import { Reorder } from "framer-motion";
 import { Item } from "./Item";
-import { Switch, Button, Modal, Result, Dropdown, Space, message } from "antd";
+import { Switch, Button, Modal, Result, Dropdown, Space } from "antd";
 import { DownOutlined, PhoneOutlined, RedoOutlined } from "@ant-design/icons";
 
 import { TileLayer } from "react-leaflet/TileLayer";
 import { MapContainer } from "react-leaflet";
 import { Popup } from "react-leaflet/Popup";
 import { Marker } from "react-leaflet/Marker";
+
+import Draggable from "react-draggable";
 
 import IconTruck from "../src/icons/IconTruck";
 import IconFinish from "../src/icons/IconFinish";
@@ -37,12 +39,13 @@ const initialItems = [
   { id: 12, order: 1640, text: "Владивосток, ул Парк Авеню, д 88, офис 36" },
 ];
 
-
 export default function App() {
+  //Фейк данные:
   const [adress, setAdress] = useState(initialItems);
-console.log("initialItems:", initialItems)
-console.log("adress:", adress)
-  //Возможность изменить порядок вкл/выкл
+  console.log("initialItems:", initialItems);
+  console.log("adress:", adress);
+
+  //Возможность изменить порядок вкл/выкл:
   const [drag, setDrag] = useState(false);
 
   const onChange = (checked) => {
@@ -50,7 +53,7 @@ console.log("adress:", adress)
     setDrag(checked);
   };
 
-  // Модалка кнопки начала маршрута
+  // Модалка кнопки начала маршрута:
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const showModal = () => {
@@ -67,36 +70,16 @@ console.log("adress:", adress)
     setOpen(false);
   };
 
-  // Свайп вверх вниз блока с маршрутами
-  const [swipeDirection, setSwipeDirection] = useState(null);
-
-  const handleTouchStart = (event) => {
-    setSwipeDirection(null);
-    const touch = event.touches[0];
-    setSwipeDirection({ x: touch.clientX, y: touch.clientY });
+  //Перетаскивание блока:
+  const handleDrag = (e, data) => {
+    // console.log(data.y);
+  };
+  const bounds = {
+    top: 0,
+    bottom: 400,
   };
 
-  const handleTouchEnd = (event) => {
-    const touch = event.changedTouches[0];
-    const xDiff = touch.clientX - swipeDirection.x;
-    const yDiff = touch.clientY - swipeDirection.y;
-    if (Math.abs(xDiff) > Math.abs(yDiff)) {
-      if (xDiff > 0) {
-        // swipe right
-      } else {
-        // swipe left
-      }
-    } else {
-      if (yDiff > 0) {
-        // swipe down
-        setSwipeDirection("down");
-      } else {
-        // swipe up
-        setSwipeDirection("up");
-      }
-    }
-  };
-// Меню аккаунта водителя
+  // Меню аккаунта водителя
   const handleMenuClick = (e) => {
     console.log("click", e);
   };
@@ -111,7 +94,6 @@ console.log("adress:", adress)
       key: "2",
       // icon: <UserOutlined />,
     },
-    
   ];
   const menuProps = {
     items,
@@ -121,93 +103,89 @@ console.log("adress:", adress)
   return (
     <>
       <MapContainer center={[43.0956391, 131.9037986]} zoom={13} scrollWheelZoom={false}>
-        <Dropdown menu={menuProps} >
+        <Dropdown menu={menuProps}>
           <Button style={{ zIndex: "99999", position: "absolute", right: "10px", top: "10px", outlineStyle: "none" }}>
             <Space>
               Мистер Вандершпигель
               <DownOutlined />
             </Space>
           </Button>
-          
         </Dropdown>
-        <a href="tel:+79999999999"><PhoneOutlined style={{fontSize: "18px"}} className="phone__dispatcher"/></a>
-        
-        <a href="#" onClick={() => window.location.reload()}>
-        <RedoOutlined style={{fontSize: "18px"}} className="phone__update"/>
-</a>
-        
+        <a href="tel:+79999999999">
+          <PhoneOutlined style={{ fontSize: "18px" }} className="phone__dispatcher" />
+        </a>
+
+        <a href="##" onClick={() => window.location.reload()}>
+          <RedoOutlined style={{ fontSize: "18px" }} className="phone__update" />
+        </a>
+
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
         <Marker position={[43.0956391, 131.9037986]}>
-        <Popup>
-        {/* <a target="_blank" rel="noopener noreferrer" href="yandexnavi://build_route_on_map?lat_to=43.13002&lon_to=131.92016"> */}
-        <a target="_blank" rel="noopener noreferrer" href="dgis://2gis.ru/routeSearch/rsType/car/to/30.149939,59.849767">
-        Владивосток, ул Ризеншнауцера-Циммер-Вандершпигеля, д 7, офис 6
-        </a>
-      </Popup>
+          <Popup>
+            {/* <a target="_blank" rel="noopener noreferrer" href="yandexnavi://build_route_on_map?lat_to=43.13002&lon_to=131.92016"> */}
+            <a target="_blank" rel="noopener noreferrer" href="dgis://2gis.ru/routeSearch/rsType/car/to/30.149939,59.849767">
+              Владивосток, ул Ризеншнауцера-Циммер-Вандершпигеля, д 7, офис 6
+            </a>
+          </Popup>
         </Marker>
 
         <Marker position={[43.0966391, 131.9137986]} icon={IconTruck}></Marker>
         <Marker position={[43.0926391, 131.9537986]} icon={IconFinish}></Marker>
-        
       </MapContainer>
-      <div className="main__routes__block">
-        <div
-          className={
-            swipeDirection === "down"
-              ? "main__routes__block block d-flex flex-column align-items-center down"
-              : "main__routes__block block d-flex flex-column align-items-center"
-          }
-        >
-          <div className="button__swipe__div" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-            <button className="swipe_line mt-2 mb-1">{/* <span className="arrow"></span> */}</button>
-          </div>
+      <Draggable axis="y" bounds={bounds} scale={1} grid={[100, 100]} onDrag={handleDrag} cancel=".switch__title__button, .ul__routes, .check__drag__button">
+        <div className="main__routes__block">
+          <div>
+            <div className="button__swipe__div">
+              <button className="swipe_line mt-2 mb-1"></button>
+            </div>
 
-          <div className="container__buttons" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-            <div className="check__drag">
-              <p className="switch__title">Изменить порядок маршрута</p>
-              <Switch size="small" checked={drag} onChange={onChange} />
+            <div className="container__buttons">
+              <div className="check__drag">
+                <p className="switch__title">Изменить порядок маршрута</p>
+                <Switch size="small" checked={drag} onChange={onChange} className="switch__title__button"/>
+              </div>
+              <div className="check__drag">
+                {/* <p className="switch__title">Начать поездку</p> */}
+                <Button type="primary" onClick={showModal} disabled={drag} className="check__drag__button">
+                  Выехал
+                </Button>
+              </div>
             </div>
-            <div className="check__drag">
-              {/* <p className="switch__title">Начать поездку</p> */}
-              <Button type="primary" onClick={showModal} disabled={drag}>
-                Выехал
-              </Button>
-            </div>
+            <Modal
+              centered
+              open={open}
+              title="Внимание!"
+              onOk={handleOk}
+              onCancel={handleCancel}
+              style={{ zIndex: "9999" }}
+              footer={[
+                <Button key="back" onClick={handleCancel}>
+                  Закрыть
+                </Button>,
+                <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
+                  Начать
+                </Button>,
+              ]}
+            >
+              <Result
+                status="warning"
+                style={{ fontSize: "13px" }}
+                title="Нажимая кнопку 'Начать', клиенты получат уведомления, что вы выехали. Желаете начать маршрут?"
+                className="result__go"
+              />
+            </Modal>
+            <Reorder.Group axis="y" onReorder={setAdress} values={adress} className="ul__routes">
+              {adress.map((item, index) => (
+                <Item key={item.id} item={item} index={index} drag={drag} />
+              ))}
+            </Reorder.Group>
           </div>
-          <Modal
-            centered
-            open={open}
-            title="Внимание!"
-            onOk={handleOk}
-            onCancel={handleCancel}
-            style={{ zIndex: "9999" }}
-            footer={[
-              <Button key="back" onClick={handleCancel}>
-                Закрыть
-              </Button>,
-              <Button key="submit" type="primary" loading={loading} onClick={handleOk}>
-                Начать
-              </Button>,
-            ]}
-          >
-            <Result
-              status="warning"
-              style={{ fontSize: "13px" }}
-              title="Нажимая кнопку 'Начать', клиенты получат уведомления, что вы выехали. Желаете начать маршрут?"
-              className="result__go"
-            />
-          </Modal>
-          <Reorder.Group axis="y" onReorder={setAdress} values={adress} className="ul__routes">
-            {adress.map((item, index) => (
-              <Item key={item.id} item={item} index={index} drag={drag} />
-            ))}
-          </Reorder.Group>
         </div>
-      </div>
+      </Draggable>
     </>
   );
 }

@@ -5,7 +5,7 @@ import { useMotionValue, Reorder, useDragControls } from "framer-motion";
 import { useRaisedShadow } from "./use-raised-shadow";
 import { ReorderIcon } from "./Icon";
 import { Col, Row, Button, Modal } from "antd";
-import Icon, { InfoCircleOutlined, CheckOutlined, GlobalOutlined } from "@ant-design/icons";
+import { InfoCircleOutlined, CheckOutlined, GlobalOutlined } from "@ant-design/icons";
 
 export const Item = (props) => {
   const y = useMotionValue(0);
