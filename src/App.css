@@ -222,7 +222,7 @@ li{
 
 
 .phone__dispatcher{
-  z-index: 99999;
+  z-index: 999;
   color: #00000096;
 
   position: absolute;
@@ -238,7 +238,7 @@ li{
 }
 
 .phone__update{
-  z-index: 99999;
+  z-index: 999;
   color: #00000096;
 
   position: absolute;
